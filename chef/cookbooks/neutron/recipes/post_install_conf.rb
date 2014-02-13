@@ -31,20 +31,20 @@ fixed_pool_start = fixed_first_ip if fixed_first_ip > fixed_pool_start
 fixed_pool_end = fixed_last_ip if fixed_last_ip < fixed_pool_end 
 
 
-#this code seems to be broken in case complicated network when floating network outside of public network
+# We know the floating network is a subnetwork of the public network (thanks to network-json-validator)
 public_net = node[:network][:networks]["public"]
-public_range = "#{public_net["subnet"]}/#{mask_to_bits(public_net["netmask"])}"
 public_router = "#{public_net["router"]}"
-public_vlan = public_net["vlan"]
+
 floating_net = node[:network][:networks]["nova_floating"]
+floating_router = public_router
 floating_range = "#{floating_net["subnet"]}/#{mask_to_bits(floating_net["netmask"])}"
+
+floating_first_ip = IPAddr.new("#{floating_range}").to_range().to_a[2]
+floating_last_ip = IPAddr.new("#{floating_range}").to_range().to_a[-2]
+
 floating_pool_start = floating_net[:ranges][:host][:start]
-floating_pool_end = floating_net[:ranges][:host][:end]
-
-floating_first_ip = IPAddr.new("#{public_range}").to_range().to_a[2]
-floating_last_ip = IPAddr.new("#{public_range}").to_range().to_a[-2]
 floating_pool_start = floating_first_ip if floating_first_ip > floating_pool_start
-
+floating_pool_end = floating_net[:ranges][:host][:end]
 floating_pool_end = floating_last_ip if floating_last_ip < floating_pool_end
 
 env_filter = " AND keystone_config_environment:keystone-config-#{node[:neutron][:keystone_instance]}"
@@ -82,18 +82,19 @@ neutron_cmd = "neutron #{neutron_args}"
 
 case node[:neutron][:networking_plugin]
 when "openvswitch"
-  floating_network_type = ""
   if node[:neutron][:networking_mode] == 'vlan'
     fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
+    floating_network_type = "--provider:network_type vlan --provider:segmentation_id #{floating_net["vlan"]} --provider:physical_network physnet1"
   elsif node[:neutron][:networking_mode] == 'gre'
     fixed_network_type = "--provider:network_type gre --provider:segmentation_id 1"
     floating_network_type = "--provider:network_type gre --provider:segmentation_id 2"
   else
     fixed_network_type = "--provider:network_type flat --provider:physical_network physnet1"
+    floating_network_type = ""
   end
 when "linuxbridge"
-    fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
-    floating_network_type = "--provider:network_type vlan --provider:segmentation_id #{public_net["vlan"]} --provider:physical_network physnet1"
+  fixed_network_type = "--provider:network_type vlan --provider:segmentation_id #{fixed_net["vlan"]} --provider:physical_network physnet1"
+  floating_network_type = "--provider:network_type vlan --provider:segmentation_id #{floating_net["vlan"]} --provider:physical_network physnet1"
 end
 
 execute "create_fixed_network" do
@@ -121,7 +122,7 @@ execute "create_fixed_subnet" do
 end
 
 execute "create_floating_subnet" do
-  command "#{neutron_cmd} subnet-create --name floating --allocation-pool start=#{floating_pool_start},end=#{floating_pool_end} --gateway #{public_router} floating #{public_range} --enable_dhcp False"
+  command "#{neutron_cmd} subnet-create --name floating --allocation-pool start=#{floating_pool_start},end=#{floating_pool_end} --gateway #{floating_router} floating #{floating_range} --enable_dhcp False"
   not_if "out=$(#{neutron_cmd} subnet-list); [ $? != 0 ] || echo ${out} | grep -q ' floating '"
   retries 5
   retry_delay 10
