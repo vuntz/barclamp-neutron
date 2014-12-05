@@ -23,6 +23,7 @@ module Barclamp
           [t(".plugin.linuxbridge"), "linuxbridge"],
           [t(".plugin.openvswitch"), "openvswitch"],
           [t(".plugin.cisco"), "cisco"],
+          [t(".plugin.nec"), "nec"],
           [t(".plugin.vmware"), "vmware"]
         ],
         selected.to_s
@@ -34,6 +35,23 @@ module Barclamp
         [
           ["gre", "gre"], 
           ["vlan", "vlan"]
+        ],
+        selected.to_s
+      )
+    end
+
+    def nec_drivers_for_neutron(selected)
+      options_for_select(
+        [
+          [t(".nec.drivers.pfc"), "pfc"],
+          [t(".nec.drivers.pfc_v51"), "pfc_v51"],
+          [t(".nec.drivers.pfc_v5"), "pfc_v5"],
+          [t(".nec.drivers.pfc_v4"), "pfc_v4"],
+          [t(".nec.drivers.pfc_v3"), "pfc_v3"],
+          [t(".nec.drivers.trema"), "trema"],
+          [t(".nec.drivers.trema_port"), "trema_port"],
+          [t(".nec.drivers.trema_portmac"), "trema_portmac"],
+          [t(".nec.drivers.trema_mac"), "trema_mac"]
         ],
         selected.to_s
       )

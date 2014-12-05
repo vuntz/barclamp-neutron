@@ -61,6 +61,10 @@ when "linuxbridge"
   neutron_agent = node[:neutron][:platform][:lb_agent_name]
   neutron_agent_pkg = node[:neutron][:platform][:lb_agent_pkg]
   agent_config_path = "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini"
+when "nec"
+  neutron_agent = node[:neutron][:platform][:nec_agent_name]
+  neutron_agent_pkg = node[:neutron][:platform][:nec_agent_pkg]
+  agent_config_path = "/etc/neutron/plugins/nec/nec.ini"
 end
 
 unless neutron[:neutron][:networking_plugin] == "vmware"
@@ -110,7 +114,7 @@ unless neutron[:neutron][:networking_plugin] == "vmware"
   end
 end
 
-if ['openvswitch', 'cisco', 'vmware'].include? neutron[:neutron][:networking_plugin]
+if ['openvswitch', 'cisco', 'nec', 'vmware'].include? neutron[:neutron][:networking_plugin]
   if node.platform == "ubuntu"
     # If we expect to install the openvswitch module via DKMS, but the module
     # does not exist, rmmod the openvswitch module before continuing.

@@ -67,6 +67,13 @@
                       "max_pool_overflow": { "type" : "int", "required" : true },
                       "pool_timeout": { "type" : "int", "required" : true }
                     }},
+                    "nec": { "type": "map", "required": true, "mapping": {
+                      "host": { "type" : "str", "required" : true },
+                      "port": { "type" : "int", "required" : true },
+                      "driver": { "type" : "str", "required" : true },
+                      "use_ssl": { "type" : "bool", "required" : true },
+                      "insecure_ssl": { "type" : "bool", "required" : true }
+                    }},
                     "vmware": { "type": "map", "required": true, "mapping": {
                       "user": { "type" : "str", "required" : true },
                       "password": { "type" : "str", "required" : true },

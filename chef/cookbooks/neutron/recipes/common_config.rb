@@ -225,7 +225,7 @@ template "/etc/neutron/neutron.conf" do
       :ssl_cert_required => neutron[:neutron][:ssl][:cert_required],
       :ssl_ca_file => neutron[:neutron][:ssl][:ca_certs],
       :neutron_server => neutron_server,
-      :use_ml2 => neutron[:neutron][:use_ml2] && neutron[:neutron][:networking_plugin] != "vmware",
+      :use_ml2 => neutron[:neutron][:use_ml2] && !(['nec', 'vmware'].include? neutron[:neutron][:networking_plugin]),
       :networking_plugin => neutron[:neutron][:networking_plugin],
       :service_plugins => service_plugins,
       :rootwrap_bin =>  node[:neutron][:rootwrap],
@@ -295,6 +295,28 @@ when "linuxbridge"
       :vlan_end => vlan_end
       )
     end
+when "nec"
+  agent_config_path = "/etc/neutron/plugins/nec/nec.ini"
+
+  directory "/etc/neutron/plugins/nec/" do
+     mode 00755
+     owner "root"
+     group neutron[:neutron][:platform][:group]
+     action :create
+     recursive true
+     not_if { node[:platform] == "suse" }
+  end
+
+  template agent_config_path do
+    cookbook "neutron"
+    source "nec.ini.erb"
+    owner "root"
+    group neutron[:neutron][:platform][:group]
+    mode "0640"
+    variables(
+      :nec_config => neutron[:neutron][:nec]
+      )
+  end
 when "vmware"
   agent_config_path = "/etc/neutron/plugins/vmware/nsx.ini"
 

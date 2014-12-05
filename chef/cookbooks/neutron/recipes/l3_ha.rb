@@ -70,6 +70,8 @@ when "openvswitch", "cisco"
   neutron_agent = node[:neutron][:platform][:ovs_agent_name]
 when "linuxbridge"
   neutron_agent = node[:neutron][:platform][:lb_agent_name]
+when "nec"
+  neutron_agent = node[:neutron][:platform][:nec_agent_name]
 when "vmware"
   neutron_agent = ''
 end

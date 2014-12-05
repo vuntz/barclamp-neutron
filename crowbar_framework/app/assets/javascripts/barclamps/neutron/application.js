@@ -241,6 +241,7 @@ $(document).ready(function($) {
         networking_mode.val('vlan').trigger('change');
         $('#mode_container').hide(100).attr('disabled', 'disabled');
 
+        $('#nec_container').hide(100).attr('disabled', 'disabled');
         $('#vmware_container').hide(100).attr('disabled', 'disabled');
         break;
       case 'openvswitch':
@@ -252,6 +253,7 @@ $(document).ready(function($) {
         $('#mode_container').show(100).removeAttr('disabled');
         networking_mode.trigger('change');
 
+        $('#nec_container').hide(100).attr('disabled', 'disabled');
         $('#vmware_container').hide(100).attr('disabled', 'disabled');
         break;
       case 'cisco':
@@ -261,7 +263,18 @@ $(document).ready(function($) {
         networking_mode.val('vlan').trigger('change');
         $('#mode_container').hide(100).attr('disabled', 'disabled');
 
+        $('#nec_container').hide(100).attr('disabled', 'disabled');
         $('#vmware_container').hide(100).attr('disabled', 'disabled');
+        break;
+      case 'nec':
+        if (non_forced_mode == undefined) {
+          networking_mode.data('non-forced', networking_mode.val());
+        }
+        networking_mode.val('gre').trigger('change');
+        $('#mode_container').hide(100).attr('disabled', 'disabled');
+
+        $('#vmware_container').hide(100).attr('disabled', 'disabled');
+        $('#nec_container').show(100).removeAttr('disabled');
         break;
       case 'vmware':
         if (non_forced_mode == undefined) {
@@ -270,6 +283,7 @@ $(document).ready(function($) {
         networking_mode.val('gre').trigger('change');
         $('#mode_container').hide(100).attr('disabled', 'disabled');
 
+        $('#nec_container').hide(100).attr('disabled', 'disabled');
         $('#vmware_container').show(100).removeAttr('disabled');
         break;
     }

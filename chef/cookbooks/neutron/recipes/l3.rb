@@ -96,12 +96,19 @@ case node[:neutron][:networking_plugin]
 when "openvswitch", "cisco"
   interface_driver = "neutron.agent.linux.interface.OVSInterfaceDriver"
   external_network_bridge = "br-public"
+  ovs_use_veth = "False"
 when "linuxbridge"
   interface_driver = "neutron.agent.linux.interface.BridgeInterfaceDriver"
   external_network_bridge = ""
+  ovs_use_veth = "False"
+when "nec"
+  interface_driver = "neutron.agent.linux.interface.OVSInterfaceDriver"
+  external_network_bridge = ""
+  ovs_use_veth = "True"
 when "vmware"
   interface_driver = "neutron.agent.linux.interface.OVSInterfaceDriver"
   external_network_bridge = ""
+  ovs_use_veth = "False"
 end
 
 
@@ -113,6 +120,7 @@ template "/etc/neutron/l3_agent.ini" do
   variables(
     :debug => node[:neutron][:debug],
     :interface_driver => interface_driver,
+    :ovs_use_veth => ovs_use_veth,
     :use_namespaces => "True",
     :handle_internal_only_routers => "True",
     :metadata_port => 9697,
@@ -147,6 +155,7 @@ template "/etc/neutron/dhcp_agent.ini" do
   variables(
     :debug => node[:neutron][:debug],
     :interface_driver => interface_driver,
+    :ovs_use_veth => ovs_use_veth,
     :use_namespaces => "True",
     :resync_interval => 5,
     :dhcp_driver => "neutron.agent.linux.dhcp.Dnsmasq",
@@ -215,6 +224,7 @@ if node[:neutron][:use_lbaas] then
     variables(
       :debug => node[:neutron][:debug],
       :interface_driver => interface_driver,
+      :ovs_use_veth => ovs_use_veth,
       :user_group => node[:neutron][:platform][:lbaas_haproxy_group],
       :device_driver => "neutron.services.loadbalancer.drivers.haproxy.namespace_driver.HaproxyNSDriver"
     )

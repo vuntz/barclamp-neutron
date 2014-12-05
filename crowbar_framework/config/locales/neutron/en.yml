@@ -47,7 +47,24 @@ en:
           linuxbridge: 'Linux Bridge'
           openvswitch: 'Open vSwitch'
           cisco: 'Cisco'
+          nec: 'NEC OpenFlow'
           vmware: 'VMWare'
+        nec:
+          drivers:
+            pfc: NEC ProgrammableFlow Controller (latest release)
+            pfc_v51: NEC ProgrammableFlow Controller (V5.1)
+            pfc_v5: NEC ProgrammableFlow Controller (V5.0)
+            pfc_v4: NEC ProgrammableFlow Controller (V4.0)
+            pfc_v3: NEC ProgrammableFlow Controller (V3.0)
+            trema: Trema Sliceable Switch (default mode)
+            trema_port: Trema Sliceable Switch (Identifier = port)
+            trema_portmac: Trema Sliceable Switch (Identifier = port + MAC address)
+            trema_mac: Trema Sliceable Switch (Identifier = MAC address)
+          host: 'OpenFlow Controller Host/IP Address'
+          port: 'OpenFlow Controller Port'
+          driver: 'Driver for OpenFlow Controller'
+          use_ssl: 'Use SSL for OpenFlow Controller'
+          insecure_ssl: 'Disable SSL certificate validation for OpenFlow Controller'
         vmware:
           user: 'VMWare NSX Username'
           password: 'VMWare NSX Password'

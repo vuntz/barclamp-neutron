@@ -40,6 +40,13 @@
         "max_pool_overflow": 10,
         "pool_timeout": 30
       },
+      "nec": {
+        "host": "",
+        "port": 8888,
+        "driver": "trema",
+        "use_ssl": false,
+        "insecure_ssl": false
+      },
       "vmware": {
         "user": "",
         "password": "",
@@ -66,7 +73,7 @@
     "neutron": {
       "crowbar-revision": 0,
       "crowbar-applied": false,
-      "schema-revision": 10,
+      "schema-revision": 11,
       "element_states": {
         "neutron-server": [ "readying", "ready", "applying" ],
         "neutron-l3": [ "readying", "ready", "applying" ]

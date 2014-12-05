@@ -17,6 +17,13 @@
       #mode_container
         = select_field :networking_mode, :collection => :networking_modes_for_neutron
 
+      #nec_container
+        = string_field %w(nec host)
+        = integer_field %w(nec port)
+        = select_field %w(nec driver), :collection => :nec_drivers_for_neutron
+        = boolean_field %w(nec use_ssl), "data-enabler" => "true", "data-enabler-target" => "#nec_insecure_ssl"
+        = boolean_field %w(nec insecure_ssl)
+
       #vmware_container
         = string_field %w(vmware user)
         = password_field %w(vmware password)

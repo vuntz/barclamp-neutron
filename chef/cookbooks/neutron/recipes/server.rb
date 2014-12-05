@@ -47,7 +47,7 @@ cookbook_file "api-paste.ini" do
   action :create
 end
 
-if node[:neutron][:use_ml2] && node[:neutron][:networking_plugin] != "vmware"
+if node[:neutron][:use_ml2] && !(['nec', 'vmware'].include? node[:neutron][:networking_plugin])
   plugin_cfg_path = "/etc/neutron/plugins/ml2/ml2_conf.ini"
 else
   case node[:neutron][:networking_plugin]
@@ -55,6 +55,8 @@ else
     agent_config_path = "/etc/neutron/plugins/openvswitch/ovs_neutron_plugin.ini"
   when "linuxbridge"
     agent_config_path = "/etc/neutron/plugins/linuxbridge/linuxbridge_conf.ini"
+  when "nec"
+    agent_config_path = "/etc/neutron/plugins/nec/nec.ini"
   when "vmware"
     agent_config_path = "/etc/neutron/plugins/vmware/nsx.ini"
   end
@@ -124,7 +126,7 @@ template plugin_cfg_path do
     :vlan_start => vlan_start,
     :vlan_end => vlan_end
   )
-  only_if { node[:neutron][:use_ml2] && node[:neutron][:networking_plugin] != "vmware" }
+  only_if { node[:neutron][:use_ml2] && !(['nec', 'vmware'].include? node[:neutron][:networking_plugin]) }
 end
 
 
