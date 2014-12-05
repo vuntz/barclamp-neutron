@@ -20,10 +20,10 @@ module Barclamp
     def networking_plugins_for_neutron(selected)
       options_for_select(
         [
-          ["linuxbridge", "linuxbridge"],
-          ["openvswitch", "openvswitch"],
-          ["cisco", "cisco"],
-          ["vmware", "vmware"]
+          [t(".plugin.linuxbridge"), "linuxbridge"],
+          [t(".plugin.openvswitch"), "openvswitch"],
+          [t(".plugin.cisco"), "cisco"],
+          [t(".plugin.vmware"), "vmware"]
         ],
         selected.to_s
       )

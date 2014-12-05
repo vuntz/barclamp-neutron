@@ -43,6 +43,11 @@ en:
         switch_password: 'Password'
         add_switch: 'Add'
         remove_switch: 'Remove'
+        plugin:
+          linuxbridge: 'Linux Bridge'
+          openvswitch: 'Open vSwitch'
+          cisco: 'Cisco'
+          vmware: 'VMWare'
         vmware:
           user: 'VMWare NSX Username'
           password: 'VMWare NSX Password'
