@@ -135,6 +135,16 @@ template "/etc/sysconfig/neutron" do
   notifies :restart, "service[#{node[:neutron][:platform][:service_name]}]"
 end
 
+template "/etc/default/neutron-server" do
+  source "neutron-server.erb"
+  owner "root"
+  group node[:neutron][:platform][:group]
+  variables(
+      :neutron_plugin_config => "/etc/neutron/plugins/ml2/ml2_conf.ini"
+    )
+  only_if { node[:platform] == "ubuntu" }
+end
+
 directory "/var/cache/neutron" do
   owner node[:neutron][:user]
   group node[:neutron][:group]
@@ -185,12 +195,16 @@ crowbar_pacemaker_sync_mark "wait-neutron_db_sync"
 execute "neutron-db-manage migrate" do
   user node[:neutron][:user]
   group node[:neutron][:group]
-  if node[:platform] == "suse"
+  case node["platform"]
+  when "suse"
     command 'source /etc/sysconfig/neutron; \
              for i in $NEUTRON_PLUGIN_CONF; do \
                CONF_ARGS="$CONF_ARGS --config-file $i"; \
              done; \
              neutron-db-manage --config-file /etc/neutron/neutron.conf $CONF_ARGS upgrade head'
+  when "ubuntu"
+    command 'source /etc/default/neutron-server; \
+             neutron-db-manage --config-file /etc/neutron/neutron.conf --config-file $NEUTRON_PLUGIN_CONFIG upgrade head'
   else
     command "neutron-db-manage --config-file /etc/neutron/neutron.conf upgrade head"
   end
@@ -241,16 +255,6 @@ end
 
 
 include_recipe "neutron::api_register"
-
-template "/etc/default/neutron-server" do
-  source "neutron-server.erb"
-  owner "root"
-  group node[:neutron][:platform][:group]
-  variables(
-      :neutron_plugin_config => "/etc/neutron/plugins/ml2/ml2_conf.ini"
-    )
-  only_if { node[:platform] == "ubuntu" }
-end
 
 if ha_enabled
   log "HA support for neutron is enabled"
