@@ -256,6 +256,39 @@ class NeutronService < PacemakerServiceObject
     super
   end
 
+  def export_to_deployment_config(role)
+    @logger.debug("Neutron export_to_deployment_config: entering")
+
+    attributes = role.default_attributes[@bc_name]
+    deployment = role.override_attributes[@bc_name]
+
+    config = DeploymentConfig.new("openstack", @bc_name)
+
+    server_element = deployment["elements"]["neutron-server"].first
+
+    config.set({
+      "host" => OpenstackHelpers.get_host_for_admin_url(server_element),
+      "port" => attributes["api"]["service_port"],
+      "protocol" => attributes["api"]["protocol"],
+      "insecure" => attributes["api"]["protocol"] == 'https' && attributes["ssl"]["insecure"],
+      "service_user" => attributes["service_user"],
+      "service_password" => attributes["service_password"],
+      "dhcp_domain" => attributes["dhcp_domain"],
+      "networking_plugin" => attributes["networking_plugin"],
+      "ml2_type_drivers" => attributes["ml2_type_drivers"],
+      "ml2_mech_drivers" => attributes["ml2_mechanism_drivers"],
+      "num_vlans" => attributes["num_vlans"],
+      "features" => {
+        "lbaas" => attributes["use_lbaas"],
+        "vpnaas" => attributes["use_vpnaas"]
+      }
+    })
+
+    config.save
+
+    @logger.debug("Neutron export_to_deployment_config: leaving")
+  end
+
   def apply_role_pre_chef_call(old_role, role, all_nodes)
     @logger.debug("Neutron apply_role_pre_chef_call: entering #{all_nodes.inspect}")
     return if all_nodes.empty?
